@@ -1,6 +1,7 @@
 package com.managment.Librarydemo.RestController;
 
 import com.managment.Librarydemo.FeignClient.PaymentService;
+import com.managment.Librarydemo.services.ExcelService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import models.Book;
@@ -20,12 +21,14 @@ public class Rest {
 
     private final CRUD crud;
    private final PaymentService paymentService;
+   private final ExcelService excelService;
     @Autowired
-    public Rest(CRUD crud, PaymentService paymentService){
+    public Rest(CRUD crud, PaymentService paymentService,ExcelService excelService){
 
         this.crud=crud;
 
         this.paymentService = paymentService;
+        this.excelService=excelService;
     }
     @PostMapping("/addBook")
     @Operation(
@@ -73,6 +76,12 @@ public class Rest {
     public List<Book> getBuyerList(@RequestBody Customer customer){
         log.info("Retrieving Customer's List");
         return crud.getUserBooksList(customer);
+    }
+    @GetMapping("/books")
+    public List<Book> getBooksFromExcel() {
+        // Specify the path to your Excel file
+        String filePath = "E:/Fintech Path/book2.xlsx";
+        return excelService.readBooksFromExcel(filePath);
     }
 
 

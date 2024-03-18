@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -23,8 +24,12 @@ public class CRUD {
     //book
 @Autowired
     public CRUD(List<Book> bookList) {
-        this.bookList = bookList;
+
+    this.bookList = bookList;
+
     }
+
+
 
 
     public String addNewBook(Book book){
@@ -68,7 +73,8 @@ log.info("No Book Found");
     log.info("Customer's List Retrieved");
             return customer.getBookList();
     }
-    }
+
+}
 
 
 

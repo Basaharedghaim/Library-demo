@@ -1,17 +1,17 @@
 package com.managment.Librarydemo.services;
 import com.managment.Librarydemo.LibraryDemoApplication;
 import lombok.extern.slf4j.Slf4j;
-import models.Book;
-import models.Customer;
+import com.models.demo.models.entity.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 
 @Service
@@ -69,9 +69,9 @@ public class CRUD {
 log.info("No Book Found");
         return "No Book Found with id " + id;
     }
-    public List<Book> getUserBooksList (Customer customer){
+    public Set<Book> getUserBooksList (Customer customer){
     log.info("Customer's List Retrieved");
-            return customer.getBookList();
+            return customer.getBooks();
     }
 
 }

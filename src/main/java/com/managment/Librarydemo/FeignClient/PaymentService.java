@@ -1,10 +1,8 @@
 package com.managment.Librarydemo.FeignClient;
 
 import lombok.extern.slf4j.Slf4j;
-import models.Book;
-import models.Customer;
-import models.Request;
-import models.Response;
+import com.models.demo.models.entity.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

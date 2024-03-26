@@ -1,9 +1,11 @@
 package com.managment.Librarydemo.services;
 
+import com.managment.Librarydemo.repository.BookRepository;
 import lombok.extern.slf4j.Slf4j;
-import models.Book;
-import models.Types;
+import com.models.demo.models.entity.*;
+
 import org.apache.poi.ss.usermodel.*;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
@@ -14,9 +16,13 @@ import java.util.List;
 @Slf4j
 @Service
 public class ExcelService {
+  final  private BookRepository bookRepository;
+  @Autowired
+    public ExcelService(BookRepository bookRepository) {
+        this.bookRepository = bookRepository;
+    }
 
-    public List<Book> readBooksFromExcel(String filePath) {
-        List<Book> books = new ArrayList<>();
+    public void readBooksFromExcel(String filePath) {
         try (InputStream excelFile = new FileInputStream(filePath);
              Workbook workbook = WorkbookFactory.create(excelFile)) {
 
@@ -53,7 +59,7 @@ public class ExcelService {
                     }
                 }
 
-                books.add(book);
+                bookRepository.save(book);
                 log.info(String.valueOf((book.getId())));
                 log.info(book.getTitle());
                 log.info(book.getAuthorName());
@@ -65,6 +71,6 @@ public class ExcelService {
             System.out.println(e.getMessage());
         }
 
-        return books;
+
     }
 }

@@ -1,8 +1,8 @@
 package com.managment.Librarydemo.FeignClient;
 
 import com.managment.Librarydemo.LibraryDemoApplication;
-import models.Request;
-import models.Response;
+import com.models.demo.models.entity.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FeignClient;

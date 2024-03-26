@@ -4,15 +4,14 @@ import com.managment.Librarydemo.FeignClient.PaymentService;
 import com.managment.Librarydemo.services.ExcelService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
-import models.Book;
-import models.Customer;
-import models.Request;
-import models.Response;
+import com.models.demo.models.entity.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.managment.Librarydemo.services.CRUD;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/bookstore")
@@ -46,6 +45,10 @@ public class Rest {
         log.info("Deleting Book with id="+id);
         return crud.deleteBookBasedOnId(id);
     }
+    @GetMapping("/sayHello")
+    public String sayHello(){
+        return "Hello From Library";
+    }
     @RequestMapping(method = RequestMethod.GET,value = "/getAll")
     @Operation(tags = {"retrieve All Books"})
     public List<Book> getAll(){
@@ -73,15 +76,16 @@ public class Rest {
 
     @PostMapping("/getBuyerList")
     @Operation(tags = {"Return Buyer's List"})
-    public List<Book> getBuyerList(@RequestBody Customer customer){
+    public Set<Book> getBuyerList(@RequestBody Customer customer){
         log.info("Retrieving Customer's List");
         return crud.getUserBooksList(customer);
     }
     @GetMapping("/books")
-    public List<Book> getBooksFromExcel() {
+    public void getBooksFromExcel() {
         // Specify the path to your Excel file
         String filePath = "E:/Fintech Path/book2.xlsx";
-        return excelService.readBooksFromExcel(filePath);
+        excelService.readBooksFromExcel(filePath);
+        log.info("Reading From Excel");
     }
 
 

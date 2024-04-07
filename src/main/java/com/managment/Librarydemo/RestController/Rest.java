@@ -1,6 +1,7 @@
 package com.managment.Librarydemo.RestController;
 
 import com.managment.Librarydemo.FeignClient.PaymentService;
+import com.managment.Librarydemo.services.ConfirmPayments;
 import com.managment.Librarydemo.services.ExcelService;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
@@ -21,13 +22,14 @@ public class Rest {
     private final CRUD crud;
    private final PaymentService paymentService;
    private final ExcelService excelService;
+   private final ConfirmPayments confirmPayments;
     @Autowired
-    public Rest(CRUD crud, PaymentService paymentService,ExcelService excelService){
+    public Rest(CRUD crud, PaymentService paymentService,ExcelService excelService,ConfirmPayments confirmPayments){
 
         this.crud=crud;
-
         this.paymentService = paymentService;
         this.excelService=excelService;
+        this.confirmPayments=confirmPayments;
     }
     @PostMapping("/addBook")
     @Operation(
@@ -67,11 +69,12 @@ public class Rest {
     @Operation(
             tags = {"Add Book to the Buyer List"}
     )
-    public Response buyBook(@RequestBody Request request){
+    public String buyBook(@RequestBody Request request,@RequestParam Long bookId){
         log.info("Buying A Book is in progress");
-        return paymentService.buyBook(request);
-
+         Response response= paymentService.buyBook(request);
+         return confirmPayments.ProceedPayment(response,bookId, (long) request.getAccount().getCustomer().getId());
     }
+
 
 
     @PostMapping("/getBuyerList")

@@ -29,9 +29,9 @@ public class ExcelService {
             Sheet sheet = workbook.getSheetAt(0);
             Iterator<Row> rowIterator = sheet.iterator();
 
-            // Skip header row if needed
+
             if (rowIterator.hasNext()) {
-                rowIterator.next(); // Skip header row
+                rowIterator.next();
             }
 
             while (rowIterator.hasNext()) {

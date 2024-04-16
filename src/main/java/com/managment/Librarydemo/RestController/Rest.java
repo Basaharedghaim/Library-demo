@@ -3,6 +3,7 @@ package com.managment.Librarydemo.RestController;
 import com.managment.Librarydemo.FeignClient.PaymentService;
 import com.managment.Librarydemo.services.ConfirmPayments;
 import com.managment.Librarydemo.services.ExcelService;
+import feign.FeignException;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import com.models.demo.models.entity.*;
@@ -15,7 +16,7 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
-@RequestMapping("/bookstore")
+@RequestMapping("/bookStore")
 @Slf4j
 public class Rest {
 
@@ -71,8 +72,8 @@ public class Rest {
     )
     public String buyBook(@RequestBody Request request,@RequestParam Long bookId){
         log.info("Buying A Book is in progress");
-         Response response= paymentService.buyBook(request);
-         return confirmPayments.ProceedPayment(response,bookId, (long) request.getAccount().getCustomer().getId());
+             paymentService.buyBook(request);
+            return confirmPayments.proceedPayment((long) bookId, (long) request.getAccount().getCustomer().getId());
     }
 
 

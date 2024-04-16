@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 @Slf4j
@@ -21,6 +22,7 @@ public class ExcelService {
     public ExcelService(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
     }
+    HashSet<Book> uniqueExcel=new HashSet<>();
 
     public void readBooksFromExcel(String filePath) {
         try (InputStream excelFile = new FileInputStream(filePath);
@@ -29,9 +31,8 @@ public class ExcelService {
             Sheet sheet = workbook.getSheetAt(0);
             Iterator<Row> rowIterator = sheet.iterator();
 
-
             if (rowIterator.hasNext()) {
-                rowIterator.next();
+                rowIterator.next(); // Skip header row
             }
 
             while (rowIterator.hasNext()) {
@@ -59,18 +60,24 @@ public class ExcelService {
                     }
                 }
 
-                bookRepository.save(book);
-                log.info(String.valueOf((book.getId())));
-                log.info(book.getTitle());
-                log.info(book.getAuthorName());
-                log.info(String.valueOf(book.getTypes()));
-                log.info(String.valueOf(book.getPrice()));
-
+                if (!uniqueExcel.contains(book)) {
+                    uniqueExcel.add(book); // Add to HashSet if it's not already present
+                }
             }
+
+            // Save unique books to the database
+            for (Book uniqueBook : uniqueExcel) {
+                bookRepository.save(uniqueBook);
+                log.info(String.valueOf((uniqueBook.getId())));
+                log.info(uniqueBook.getTitle());
+                log.info(uniqueBook.getAuthorName());
+                log.info(String.valueOf(uniqueBook.getTypes()));
+                log.info(String.valueOf(uniqueBook.getPrice()));
+            }
+
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            log.error("Error reading or saving books from Excel: " + e.getMessage());
         }
-
-
     }
+
 }

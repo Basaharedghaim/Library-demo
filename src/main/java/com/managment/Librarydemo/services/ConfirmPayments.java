@@ -1,5 +1,6 @@
 package com.managment.Librarydemo.services;
 
+import com.managment.Librarydemo.exception.CustomerErrorResponse;
 import com.managment.Librarydemo.repository.BookRepository;
 import com.managment.Librarydemo.repository.CustomerRepository;
 import com.models.demo.models.entity.*;
@@ -8,6 +9,8 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -20,28 +23,34 @@ public class ConfirmPayments {
         this.customerRepository=customerRepository;
     }
     @Transactional
-    public String ProceedPayment(Response response ,Long bookId,Long customerId ){
-        if(response.getStatus()== Status.SUCCESS){
-        Book book = bookRepository.findById(bookId)
-               .orElseThrow(() -> new EntityNotFoundException("Book not found with id: " +bookId));
-            Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new EntityNotFoundException("user not found with id: " +customerId));
+    public String proceedPayment(Long bookId, Long customerId) {
+        try {
+            Optional<Book> bookOptional = bookRepository.findById(bookId);
+            Optional<Customer> customerOptional = customerRepository.findById(customerId);
 
-       customer.getBooks().add(book);
-       book.getCustomers().add(customer);
+            if (bookOptional.isPresent() && customerOptional.isPresent()) {
+                Book book = bookOptional.get();
+                Customer customer = customerOptional.get();
 
-        customerRepository.save(customer);
-        bookRepository.save(book);
-        return "Successful";
+                customer.getBooks().add(book);
+                book.getCustomers().add(customer);
 
-        } else if (response.getStatus()==Status.FAIL) {
-            return "Failed";
+                customerRepository.save(customer);
+                bookRepository.save(book);
 
-        }
-        else {
-           return  "Still Processing";
-
+                return "Successful";
+            } else {
+                throw new EntityNotFoundException("Book or Customer not found");
+            }
+        } catch (EntityNotFoundException e) {
+            // Log the exception or handle it as needed
+            throw e;
+        } catch (Exception e) {
+            // Log the exception or handle it as needed
+            throw new CustomerErrorResponse("Transaction failed: " + e.getMessage());
         }
     }
+
+
 
 }

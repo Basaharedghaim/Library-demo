@@ -18,7 +18,7 @@ import java.util.Set;
 @Slf4j
 public class CRUD {
         private List<Book> bookList=new ArrayList<Book>();
-    static final Logger logger = (Logger) LoggerFactory.getLogger(LibraryDemoApplication.class);
+   // static final Logger logger = (Logger) LoggerFactory.getLogger(LibraryDemoApplication.class);
 
 
     //book

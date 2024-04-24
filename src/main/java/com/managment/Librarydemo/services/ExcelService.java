@@ -10,23 +10,31 @@ import org.springframework.stereotype.Service;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
+
 @Slf4j
 @Service
 public class ExcelService {
-  final  private BookRepository bookRepository;
-  @Autowired
+    private List<Book> allBooks=new LinkedList<>();
+    final private BookRepository bookRepository;
+
+    @Autowired
     public ExcelService(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
     }
-    HashSet<Book> uniqueExcel=new HashSet<>();
+
+
+
+    public HashSet<Book> booksList (){
+        HashSet<Book> books=new HashSet<>();
+        books.addAll(bookRepository.findAll());
+        return books;
+    }
 
     public void readBooksFromExcel(String filePath) {
         try (InputStream excelFile = new FileInputStream(filePath);
              Workbook workbook = WorkbookFactory.create(excelFile)) {
+            HashSet<Book> uniqueExcel = booksList();
 
             Sheet sheet = workbook.getSheetAt(0);
             Iterator<Row> rowIterator = sheet.iterator();
@@ -60,13 +68,15 @@ public class ExcelService {
                     }
                 }
 
-                if (!uniqueExcel.contains(book)) {
-                    uniqueExcel.add(book); // Add to HashSet if it's not already present
-                }
+
+                uniqueExcel.add(book); // Add to HashSet if it's not already present
             }
 
+            ArrayList<Book> sortedBooks = new ArrayList<Book>(uniqueExcel);
+            Collections.sort(sortedBooks); // Sort books by price
+
             // Save unique books to the database
-            for (Book uniqueBook : uniqueExcel) {
+            for (Book uniqueBook : sortedBooks) {
                 bookRepository.save(uniqueBook);
                 log.info(String.valueOf((uniqueBook.getId())));
                 log.info(uniqueBook.getTitle());
@@ -79,5 +89,7 @@ public class ExcelService {
             log.error("Error reading or saving books from Excel: " + e.getMessage());
         }
     }
+
+
 
 }

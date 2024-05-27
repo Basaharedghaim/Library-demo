@@ -1,17 +1,19 @@
 package com.managment.Librarydemo.RestController;
 
 import com.managment.Librarydemo.FeignClient.PaymentService;
-import com.managment.Librarydemo.services.ConfirmPayments;
+import com.managment.Librarydemo.services.ElasticService;
+import com.managment.Librarydemo.services.Reserve;
 import com.managment.Librarydemo.services.ExcelService;
-import feign.FeignException;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
 import com.models.demo.models.entity.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.managment.Librarydemo.services.CRUD;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -23,20 +25,22 @@ public class Rest {
     private final CRUD crud;
    private final PaymentService paymentService;
    private final ExcelService excelService;
-   private final ConfirmPayments confirmPayments;
+   private final Reserve reserve;
+   private final ElasticService elasticService;
     @Autowired
-    public Rest(CRUD crud, PaymentService paymentService,ExcelService excelService,ConfirmPayments confirmPayments){
+    public Rest(CRUD crud, PaymentService paymentService, ExcelService excelService, Reserve reserve, ElasticService elasticService){
 
         this.crud=crud;
         this.paymentService = paymentService;
         this.excelService=excelService;
-        this.confirmPayments=confirmPayments;
+        this.reserve = reserve;
+        this.elasticService=elasticService;
     }
     @PostMapping("/addBook")
     @Operation(
             tags = {"Add New Book"}
     )
-    public String  AddBook(@RequestBody Book book){
+    public Book  AddBook(@RequestBody Book book){
         log.info("Adding NewBook");
         return crud.addNewBook(book);
     }
@@ -48,10 +52,7 @@ public class Rest {
         log.info("Deleting Book with id="+id);
         return crud.deleteBookBasedOnId(id);
     }
-    @GetMapping("/sayHello")
-    public String sayHello(){
-        return "Hello From Library";
-    }
+
     @RequestMapping(method = RequestMethod.GET,value = "/getAll")
     @Operation(tags = {"retrieve All Books"})
     public List<Book> getAll(){
@@ -67,14 +68,19 @@ public class Rest {
         return crud.updateTitle(id,title);
     }
     @PostMapping("/buyBook")
-    @Operation(
-            tags = {"Add Book to the Buyer List"}
-    )
-    public String buyBook(@RequestBody Request request,@RequestParam Long bookId){
-        log.info("Buying A Book is in progress");
-             paymentService.buyBook(request);
-            return confirmPayments.proceedPayment((long) bookId, (long) request.getAccount().getCustomer().getId());
+    @Operation(tags = {"Add Book to the Buyer List"})
+    public Response buyBook(@RequestBody Request request, @RequestParam Long bookId){
+
+        ElasticLog elasticLog = new ElasticLog();
+        elasticLog.setRequest(request);
+        elasticLog.setTimeStamp(new Date());
+        reserve.mapBooksToCustomers(bookId,request.getAccount().getCustomer().getId());
+        Response response =paymentService.buyBook(request);
+        elasticLog.setResponse(response);
+        elasticService.saveElasticLogs(elasticLog);
+        return response;
     }
+
 
 
 

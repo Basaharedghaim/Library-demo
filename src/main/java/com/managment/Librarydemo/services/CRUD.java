@@ -1,7 +1,7 @@
 package com.managment.Librarydemo.services;
 import com.managment.Librarydemo.LibraryDemoApplication;
-import lombok.extern.slf4j.Slf4j;
 import com.models.demo.models.entity.*;
+import lombok.extern.slf4j.Slf4j;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,10 +32,10 @@ public class CRUD {
 
 
 
-    public String addNewBook(Book book){
+    public Book addNewBook(Book book){
         log.info("Book Added with id"+book.getId());
         bookList.add(book);
-        return "Book Added with Id="+book.getId();
+        return book;
 
 
     }

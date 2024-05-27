@@ -21,9 +21,6 @@ servers ={@Server(url = "http://localhost:8080"),@Server(url = "http://oneoone.c
 @EntityScan("com.models.demo.models")
 public class LibraryDemoApplication
 {
-	private static final Logger logger = (Logger) LoggerFactory.getLogger(LibraryDemoApplication.class);
-
-
 	public static void main(String[] args) {
 		SpringApplication.run(LibraryDemoApplication.class, args);
 

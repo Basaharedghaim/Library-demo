@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.ErrorResponseException;
 
+import java.util.Date;
+
 @Service
 @Slf4j
 
@@ -19,22 +21,21 @@ public class PaymentService {
     public PaymentService(PaymentFeignClient paymentFeignClient){
         this.paymentFeignClient=paymentFeignClient;
     }
-    public String buyBook(Request request) {
+    public Response buyBook(Request request) {
         try {
             log.info("Processing In Payment Service");
-            return paymentFeignClient.buyBook(request);
-        } catch (CustomerErrorResponse e)
-        {
+            Response response = paymentFeignClient.buyBook(request);
+            return response;
+        } catch (CustomerErrorResponse e) {
             if ("Insufficient Balance".equals(e.getErrorType())) {
                 throw new CustomerErrorResponse("Insufficient Balance");
-            }
-            if ("Customer Not Found".equals(e.getErrorType()))
-            {
+            } else if ("Customer Not Found".equals(e.getErrorType())) {
                 throw new CustomerErrorResponse("Customer Not Found");
+            } else {
+                throw new CustomerErrorResponse();
             }
-            }
-        throw new CustomerErrorResponse();
         }
+    }
     }
 
 

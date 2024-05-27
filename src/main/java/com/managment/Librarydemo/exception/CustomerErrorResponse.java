@@ -1,8 +1,6 @@
 package com.managment.Librarydemo.exception;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 
@@ -27,7 +25,4 @@ public class CustomerErrorResponse extends RuntimeException {
         super(cause);
     }
 
-    public CustomerErrorResponse(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
 }
